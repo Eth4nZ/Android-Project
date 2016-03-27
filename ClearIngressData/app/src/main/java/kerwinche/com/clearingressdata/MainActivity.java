@@ -1,9 +1,7 @@
 package kerwinche.com.clearingressdata;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,7 +35,6 @@ public class MainActivity extends Activity {
     }
 
     public boolean clearApplicationCache(String packageName) {
-
         String cmd = "pm clear "+packageName;
         boolean result= false;
         ProcessBuilder pb = new ProcessBuilder().redirectErrorStream(true).command("su");
