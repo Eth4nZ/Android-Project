@@ -1,54 +1,66 @@
 package kerwinche.com.clearingressdata;
 
 import android.app.Activity;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import com.iceman.test.R;
+import java.io.OutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends Activity {
 
-    private DevicePolicyManager policyManager;
-
-    private ComponentName componentName;
+    private static final String CHARSET_NAME = "UTF-8";
+    private static final String PACKAGE_NAME = "com.nianticproject.ingress";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        String msg=clearApplicationCache(PACKAGE_NAME)?"Clear cache success!":"Clear cache fail!";
+        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
 
-        setContentView(R.layout.activity_main);
-        /*
-        policyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-        componentName = new ComponentName(this, LockReceiver.class);
-        if (policyManager.isAdminActive(componentName)) {//判断是否有权限(激活了设备管理器)
-            policyManager.lockNow();// 直接锁屏
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }else{
-            activeManager();//激活设备管理器获取权限
-        }*/
+        //kill process
+        new Timer().schedule(new TimerTask() {
+            public void run() {
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        }, 500);
+
 
     }
 
 
     @Override
-    protected void onResume() {//重写此方法用来在第一次激活设备管理器之后锁定屏幕
-        /*
-        if (policyManager.isAdminActive(componentName)) {
-            policyManager.lockNow();
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }*/
+    protected void onResume() {
         super.onResume();
     }
 
-    private void activeManager() {
-        //使用隐式意图调用系统方法来激活指定的设备管理器
-        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
-        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "一键锁屏");
-        startActivity(intent);
-    }
+    public boolean clearApplicationCache(String packageName) {
 
+        String cmd = "pm clear "+packageName;
+        boolean result= false;
+        ProcessBuilder pb = new ProcessBuilder().redirectErrorStream(true).command("su");
+        Process p = null;
+        try {
+            p = pb.start();
+            StreamReader stdoutReader = new StreamReader(p.getInputStream(), CHARSET_NAME);
+            stdoutReader.start();
+
+            OutputStream out = p.getOutputStream();
+            out.write((cmd + "\n").getBytes(CHARSET_NAME));
+            out.write(("exit" + "\n").getBytes(CHARSET_NAME));
+            out.flush();
+
+            p.waitFor();
+            String msg = stdoutReader.getResult().trim();
+
+            result=msg.equals("Success");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+
+    }
 }
