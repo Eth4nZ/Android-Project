@@ -35,10 +35,11 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {//重写此方法用来在第一次激活设备管理器之后锁定屏幕
+        /*
         if (policyManager.isAdminActive(componentName)) {
             policyManager.lockNow();
             android.os.Process.killProcess(android.os.Process.myPid());
-        }
+        }*/
         super.onResume();
     }
 
