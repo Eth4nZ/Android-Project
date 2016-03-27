@@ -3,7 +3,6 @@ package kerwinche.com.clearingressdata;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -21,6 +20,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        /*
         policyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         componentName = new ComponentName(this, LockReceiver.class);
         if (policyManager.isAdminActive(componentName)) {//判断是否有权限(激活了设备管理器)
@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
             android.os.Process.killProcess(android.os.Process.myPid());
         }else{
             activeManager();//激活设备管理器获取权限
-        }
+        }*/
 
     }
 
